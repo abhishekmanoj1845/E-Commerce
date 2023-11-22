@@ -3,15 +3,22 @@ from .models import *
 from django.http import JsonResponse
 import json
 import datetime
+import random
 from . utils import cookieCart, cartData, guestOrder
+
+from django.contrib.auth import authenticate, login,logout
+from django.shortcuts import render, redirect
+from .models import Customer
+from django.contrib import messages
 
 # Create your views here.
 def store(request):
-	data = cartData(request)
-	cartItems = data['cartItems']
-	products = Product.objects.all()
-	context = {'products':products,'cartItems':cartItems}
-	return render(request, 'store/store.html', context)
+    is_authenticated = request.user.is_authenticated
+    data = cartData(request)
+    cartItems = data['cartItems']
+    products = Product.objects.all()
+    context = {'products':products,'cartItems':cartItems,'is_authenticated': is_authenticated}
+    return render(request, 'store/store.html', context)
 
 def cart(request):
     data = cartData(request)
@@ -57,7 +64,10 @@ def updateItem(request):
 
 
 def processOrder(request):
-	transaction_id = datetime.datetime.now().timestamp()
+	timestamp = datetime.datetime.now().timestamp()
+	random_number = random.randint(0, 1000)  # Adjust the range as needed
+	transaction_id = f"{timestamp}-{random_number}"
+	print(transaction_id)
 	data = json.loads(request.body)
 	
 	if request.user.is_authenticated:
@@ -85,3 +95,63 @@ def processOrder(request):
 				# country=data['shipping']['country'],
 			)
 	return JsonResponse('Payment Complete', safe=False)
+
+from django.contrib.auth.hashers import check_password
+def signin(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        print(email,password)
+        try:
+            # Fetch the user based on the username
+            user = User.objects.get(email=email)
+            
+            # Compare the hashed password with the provided password
+            if check_password(password, user.password):
+                messages.success(request,"Logged in successfully!!")
+                login(request,user)
+                
+                return redirect('store')
+	
+            else:
+                print("Password doesn't match")
+                messages.error(request,"Password doesn't match!!!")
+                return redirect('signin')
+        except User.DoesNotExist:
+            print("User doesnt exist")
+            messages.error(request,"User doesnt exist!!!!")
+            return redirect('signin')
+    return render(request, 'store/signin.html')
+
+
+# def signin(request):
+#     if request.method == 'POST':
+#         email = request.POST.get('email')
+#         password = request.POST.get('password')
+        
+#         try:
+#             # Fetch the user based on the username
+#             user = User.objects.get(email=email)
+            
+#             # Check if the provided password matches the user's password
+#             if check_password(password, user.password):
+#                 login(request, user)
+#                 messages.success(request,"Logged in successfully!!")
+#                 return redirect('store')
+#             else:
+#                 print("Password doesn't match")
+#                 # Password doesn't match, render template with a message
+#                 return render(request, 'signin.html', {'error_message': 'Invalid password'})
+        
+#         except User.DoesNotExist:
+#             print("User doesn't exist")
+#             # User doesn't exist, render template with a message
+#             return render(request, 'signin.html', {'error_message': 'User does not exist'})
+
+#     return render(request, 'store/signin.html')
+
+
+def signout(request):
+    logout(request)
+    messages.success(request,"Logged out successfully!!")
+    return redirect('store')

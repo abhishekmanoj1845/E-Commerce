@@ -39,7 +39,7 @@ h1,h2,h3,h4,h5,h6{
 	display: block;
 	text-align: center;
 	color:#fff;
-	background-color: rgb(62, 4, 4);
+	background-color: rgb(205, 11, 11);
 	width: 20px;
 	height: 25px;
 	border-radius: 50%;
@@ -96,4 +96,13 @@ h1,h2,h3,h4,h5,h6{
 
 .hidden{
 	display: none!important;
+}
+
+.hide {
+	display: none;
+  }
+
+#logo{
+	max-width:80px;
+	max-height: 50px;
 }

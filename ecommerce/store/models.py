@@ -1,11 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User 
+from django.contrib.auth.base_user import AbstractBaseUser
 # Create your models here.
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE,null=True,blank=True)
     name = models.CharField(max_length=200, null=True)
     email = models.EmailField(max_length=100, null=True)
+    password = models.CharField( max_length=50)
 
     def __str__(self):
         return str(self.name)

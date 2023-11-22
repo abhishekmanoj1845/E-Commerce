@@ -50,55 +50,49 @@ def cartData(request):
         items = cookieData['items']
     return {'items':items,'order':order,'cartItems':cartItems}
 
-# def guestOrder(request, data):
-    # print('User is not logged in')
-    # print('COOKIES:',request.COOKIES)
-    # name = data['form']['name']
-    # email = data['form']['email']
-
-    # cookieData = cookieCart(request)
-    # items = cookieData['items']
-    # customer, created = Customer.objects.get_or_create(
-    #     email=email,
-    # )
-    # customer.name=name
-    # customer.save()
-    # print(customer.name)
-
-    # order = Order.objects.create(
-    #     customer=customer,
-    #     complete = False,
-    # )
-
-    # for item in items:
-    #     product = Product.objects.get(id=item['product']['id'])
-
-    #     orderItem = OrderItem.objects.create(
-    #         product=product,
-    #         order=order,
-    #         quantity=item['quantity']
-    #     )
-    
-    # return customer,order
     
 def guestOrder(request, data):
     print('User is not logged in..')
         
     print('COOKIES:', request.COOKIES)
-    name = data['form']['name']
-    print(name)
+    username = data['form']['username']
+    print(username)
     email = data['form']['email']
     print(email)
+    lname = data['form']['lname']
+    fname = data['form']['fname']
+    password = data['form']['password']
+    cpassword = data['form']['cpassword']
     cookieData = cookieCart(request)
     items = cookieData['items']
     
+    
+    
+    # user, created = User.objects.get_or_create(
+    #     email=email,
+    # )
+    # user.name = name
+    # user.save()
+    
+    try:
+        user = User.objects.get(email=email)
+        user.first_name = fname  # Update the user's name
+        user.save()  # Save the changes
+    except User.DoesNotExist:
+   
+        user = User.objects.create_user(email=email, username=username,first_name=fname,last_name=lname) #password=password doesnt store or hash password properly.
+        user.set_password(password)
+        user.save()
+    
     customer, created = Customer.objects.get_or_create(
-        email=email,
+        email=email,user=user,
         )
-    customer.name = name
+    customer.name = fname
+    customer.password = password
+    # customer.user=username      #No chance for user selection as onetoonefield
     customer.save()
-    print(customer.name)
-    print(customer.email)
+    
+        
     order = Order.objects.create(
         customer=customer,
         complete=False,

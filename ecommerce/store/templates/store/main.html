@@ -48,8 +48,17 @@
     </script>
 </head>
 <body>
+
+  
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="{% url 'store' %}">Panorama Cart</a>
+
+      <video id="logo" autoplay loop muted  class="mx-4">
+        <source src="{% static '/images/cartify.mp4' %}" type="video/mp4" >
+        Your browser does not support the video tag.
+      </video>
+
+        {% comment %} <a class="navbar-brand" href="{% url 'store' %}">CARTiFy</a> {% endcomment %}
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -61,12 +70,17 @@
             </li>
             
           </ul>
-          <div class="form-inline my-4 mx-2 my-lg-0">
-            <a href="#"class="btn btn-warning mx-3">Login</a>
+          <div class="  form-inline my-4 mx-2 my-lg-0 ">
+            <a href="{% url 'signin' %}"class="log btn btn-warning mx-3">Login</a>
             
-            <a href="{% url 'cart' %}">
-               <img  id="cart-icon" src="{% static 'images/cart.png' %}">
-           </a>
+            {% comment %} <img class="pinfo hide mx-3" src="static/images/perinfo.png" alt="" width="40" > {% endcomment %}
+            <a href="#"><img  class="pinfo hide mx-3" src="{% static 'images/perinfo.png' %}" width="40"></a>
+
+            <a href="{% url 'signout' %}" class="logout btn btn-warning mx-3 hide">Logout</a>
+            
+
+            
+            <a href="{% url 'cart' %}"><img  id="cart-icon" src="{% static 'images/cart.png' %}"></a>
            <p id="cart-total">{{cartItems}}</p>
    
        </div>
@@ -86,5 +100,39 @@
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the value of the 'authenticated' variable passed from Django template
+        const isAuthenticated = "{{ user.is_authenticated }}"; // This should be passed from Django
+    
+        // Check if the user is authenticated and hide the login button if true
+        if (isAuthenticated === "True") {
+            const loginButton = document.querySelector('.log');
+            if (loginButton) {
+                loginButton.style.display = 'none';
+            }
+
+            var logoutButton = document.querySelector('.logout');
+            // To show the element
+            if (logoutButton){
+            logoutButton.classList.remove('hide');
+            }
+
+            var logoutButton = document.querySelector('.pinfo');
+            // To show the element
+            if (logoutButton){
+            logoutButton.classList.remove('hide');
+            }
+        }
+        else{
+          var logoutButton = document.querySelector('.logout');
+          // To show the element
+          if (logoutButton){
+          logoutButton.classList.add('hide');
+        }
+      }
+    });
+    </script>
+    
 </body>
 </html>
